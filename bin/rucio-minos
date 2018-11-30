@@ -14,20 +14,23 @@
 # limitations under the License.
 #
 # Authors:
-# - Cedric Serfon, <cedric.serfon@cern.ch>, 2014-2018
-# - Mario Lassnig, <mario.lassnig@cern.ch>, 2015
-# - Vincent Garonne, <vgaronne@gmail.com>, 2018
+# - Cedric Serfon, <cedric.serfon@cern.ch>, 2018
 #
 # PY3K COMPATIBLE
 
 '''
-Necromancer Daemon : Bring the dead files back to life
+Minos Daemon :
+Minos is the name of one of the judge on the underworld in the greek mythology.
+The role of the daemon is get as input the list of PFNs declared bad
+and to class them into 2 categories : 
+- The ones temporary available
+- The ones that have a real problem and that will need to be recovered by the necromancer
 '''
 
 import argparse
 import signal
 
-from rucio.daemons.badreplicas..necromancer import run, stop
+from rucio.daemons.badreplicas.minos import run, stop
 
 
 def get_parser():
@@ -38,6 +41,7 @@ def get_parser():
     parser.add_argument("--run-once", action="store_true", default=False, help='Runs one loop iteration')
     parser.add_argument("--threads", action="store", default=1, type=int, help='Concurrency control: number of threads')
     parser.add_argument("--bulk", action="store", default=1000, type=int, help='Bulk control: number of requests per cycle')
+    parser.add_argument('--sleep-time', action="store", default=60, type=int, help='Seconds to sleep if few requests')
     return parser
 
 
@@ -49,6 +53,6 @@ if __name__ == "__main__":
     parser = get_parser()
     args = parser.parse_args()
     try:
-        run(threads=args.threads, bulk=args.bulk, once=args.run_once)
+        run(threads=args.threads, bulk=args.bulk, once=args.run_once, sleep_time=args.sleep_time)
     except KeyboardInterrupt:
         stop()
