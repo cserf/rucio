@@ -17,7 +17,7 @@
 # - Mario Lassnig, <mario.lassnig@cern.ch>, 2012-2019
 # - Angelos Molfetas, <angelos.molfetas@cern.ch>, 2012
 # - Ralph Vigne, <ralph.vigne@cern.ch>, 2013
-# - Cedric Serfon, <cedric.serfon@cern.ch>, 2013-2018
+# - Cedric Serfon, <cedric.serfon@cern.ch>, 2013-2019
 # - Martin Barisits, <martin.barisits@cern.ch>, 2013-2019
 # - Wen Guan, <wen.guan@cern.ch>, 2015
 # - Hannes Hansen, <hannes.jakob.hansen@cern.ch>, 2019
@@ -734,7 +734,8 @@ class RSEProtocols(BASE, ModelBase):
     read_wan = Column(Integer, server_default='0')  # if no value is provided, 0 i.e. not supported is assumed as default value
     write_wan = Column(Integer, server_default='0')  # if no value is provided, 0 i.e. not supported is assumed as default value
     delete_wan = Column(Integer, server_default='0')  # if no value is provided, 0 i.e. not supported is assumed as default value
-    third_party_copy = Column(Integer, server_default='0')  # if no value is provided, 0 i.e. not supported is assumed as default value
+    third_party_copy_read = Column(Integer, server_default='0')  # if no value is provided, 0 i.e. not supported is assumed as default value
+    third_party_copy_write = Column(Integer, server_default='0')  # if no value is provided, 0 i.e. not supported is assumed as default value
     extended_attributes = Column(String(4000), nullable=True)
     rses = relationship("RSE", backref="rse_protocols")
     _table_args = (PrimaryKeyConstraint('rse_id', 'scheme', 'hostname', 'port', name='RSE_PROTOCOL_PK'),
@@ -1063,6 +1064,8 @@ class Request(BASE, ModelBase, Versioned):
     account = Column(InternalAccountString(25))
     requested_at = Column(DateTime)
     priority = Column(Integer)
+    parent_request_id = Column(GUID())
+    child_request_id = Column(GUID())
     _table_args = (PrimaryKeyConstraint('id', name='REQUESTS_PK'),
                    ForeignKeyConstraint(['scope', 'name'], ['dids.scope', 'dids.name'], name='REQUESTS_DID_FK'),
                    ForeignKeyConstraint(['dest_rse_id'], ['rses.id'], name='REQUESTS_RSES_FK'),
